@@ -1,0 +1,888 @@
+<html>
+  <head>
+    <title>Touhou Cafe Radio</title>
+
+    <meta name="description" content="Randomly Playing Cafe Touhou Songs!">
+    <meta name="keywords" content="cafe, radio, touhou, japanese, music, doujin, arrange">
+    <meta name="author" content="Epicfisher">
+
+    <meta property="og:title" content="Touhou Cafe Radio">
+    <meta property="og:type" content="music.radio_station">
+    <meta property="og:image" content="empty">
+    <meta property="og:url" content="empty">
+
+    <meta property="og:description" content="Randomly Playing Cafe Touhou Songs!">
+    <meta property="og:audio" content="https://touhou-radio.herokuapp.com/live.ogg">
+
+    <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>-->
+
+    <script type='text/javascript'>
+	  // Wallpaper Array: ["Image URL", "Image Time Identifier", "Image Source"]
+	  var wallpapers = [
+		["4d14be4d7081ce578770f7cbeefcc7a9.jpg", "DAY", "https://www.pixiv.net/en/artworks/42967838"],
+		["ecfc07be591d35018b20456ab1400f60.jpg", "NIGHT", "https://www.pixiv.net/en/artworks/74784230"],
+		["f7af909e2992d9a3254a0386eded448c.jpg", "SUN", "https://www.pixiv.net/en/artworks/49268642"],
+		["feefda19f236d0c4459156263a8f5c09.jpg", "SUN", "https://www.pixiv.net/en/artworks/73691792"]
+	  ];
+	  //alert(wallpapers[0][0]);
+	  
+	  var sunImagesAvailable = 0;
+      var dayImagesAvailable = 0;
+      var nightImagesAvailable = 0;
+	  
+	  var sunWallpapers = [ ];
+	  var dayWallpapers = [ ];
+	  var nightWallpapers = [ ];
+	  
+	  // Populate Time-Specific Wallpapers
+	  for(var i = 0; i < wallpapers.length; i++)
+	  {
+		if(wallpapers[i][1] == "SUN") { sunWallpapers.push(wallpapers[i]); sunImagesAvailable++; }
+		if(wallpapers[i][1] == "DAY") { dayWallpapers.push(wallpapers[i]); dayImagesAvailable++; }
+		if(wallpapers[i][1] == "NIGHT") { nightWallpapers.push(wallpapers[i]); nightImagesAvailable++; }
+	  }
+    </script>
+
+    <script type='text/javascript' src='backgroundinfo.js'></script>
+
+  	<link rel="icon" href="favicon.ico" type="image/x-icon">
+
+  	<style type="text/css">
+  		.shadowtext
+  		{
+  			text-shadow:
+  				-1px -1px 0 #000000,
+  				1px -1px 0 #000000,
+  				-1px 1px 0 #000000,
+  				1px 1px 0 #000000;
+  		}
+		
+		a {
+  color: #FFEBCD;
+}
+
+
+      .aligncenter
+      {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+
+      .wallpaperimage
+      {
+        position: absolute;
+        left: 0;
+        top: 0;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-position: center center;
+        width: 100%;
+        height: 100%;
+        position: fixed;
+        -webkit-background-size: cover;
+        -moz-background-size: cover;
+        background-size: cover;
+      }
+  	</style>
+
+  	<script>
+      var protocolType;
+      var icecastPort;
+
+  	  var currentlyOffline = false;
+
+      var disableAlbumCovers = false;
+
+      var maximumSongTitleLength = 56;
+
+      var wallpaperInterval;
+      var wallpaperPreloadInterval;
+
+      const wallpaperIntervalTime = 30000;
+      const wallpaperPreloadIntervalTime = wallpaperIntervalTime / 2;
+
+      var changingWallpaper = false;
+      var wallpaperPreloaded = false;
+
+      var disregardTimeWallpapers = false;
+	  var disableWallpapers = false;
+
+      var currentTimeString;
+
+      var nextWallpaper = "";
+
+      (function() {
+        var FX = {
+            easing: {
+                linear: function(progress) {
+                    return progress;
+                },
+                quadratic: function(progress) {
+                    return Math.pow(progress, 2);
+                },
+                swing: function(progress) {
+                    return 0.5 - Math.cos(progress * Math.PI) / 2;
+                },
+                circ: function(progress) {
+                    return 1 - Math.sin(Math.acos(progress));
+                },
+                back: function(progress, x) {
+                    return Math.pow(progress, 2) * ((x + 1) * progress - x);
+                },
+                bounce: function(progress) {
+                    for (var a = 0, b = 1, result; 1; a += b, b /= 2) {
+                        if (progress >= (7 - 4 * a) / 11) {
+                            return -Math.pow((11 - 6 * a - 11 * progress) / 4, 2) + Math.pow(b, 2);
+                        }
+                    }
+                },
+                elastic: function(progress, x) {
+                    return Math.pow(2, 10 * (progress - 1)) * Math.cos(20 * Math.PI * x / 3 * progress);
+                }
+            },
+            animate: function(options) {
+                var start = new Date;
+                var id = setInterval(function() {
+                    var timePassed = new Date - start;
+                    var progress = timePassed / options.duration;
+                    if (progress > 1) {
+                        progress = 1;
+                    }
+                    options.progress = progress;
+                    var delta = options.delta(progress);
+                    options.step(delta);
+                    if (progress == 1) {
+                        clearInterval(id);
+                        options.complete();
+                    }
+                }, options.delay || 10);
+            },
+            fadeOut: function(element, options) {
+                var to = 1;
+                this.animate({
+                    duration: options.duration,
+                    delta: function(progress) {
+                        progress = this.progress;
+                        return FX.easing.swing(progress);
+                    },
+                    complete: options.complete,
+                    step: function(delta) {
+                        element.style.opacity = to - delta;
+                    }
+                });
+            },
+            fadeIn: function(element, options) {
+                var to = 0;
+                this.animate({
+                    duration: options.duration,
+                    delta: function(progress) {
+                        progress = this.progress;
+                        return FX.easing.swing(progress);
+                    },
+                    complete: options.complete,
+                    step: function(delta) {
+                        element.style.opacity = to + delta;
+                    }
+                });
+            }
+        };
+        window.FX = FX;
+      })()
+
+  		function readTextFile(file)
+  		{
+  			try
+  			{
+  				var rawFile = new XMLHttpRequest();
+  				rawFile.open("GET", file, true);
+  				rawFile.onreadystatechange = function ()
+  				{
+  					if(rawFile.readyState === 4)
+  					{
+  						if(rawFile.status === 200 || rawFile.status == 0)
+  						{
+                clearTimeout(rawFileTimeout);
+  							var currentRawStatusJson = rawFile.responseText;
+  							returnedStatusInfo(currentRawStatusJson);
+
+  							return;
+  						}
+  					}
+  				}
+
+  				var rawFileTimeout=setTimeout(ajaxTimeout,3000);
+  				function ajaxTimeout()
+  				{
+  				   rawFile.abort();
+
+  				   return;
+  				}
+  				/*
+  				client.ontimeout = function(e)
+  				{
+  					alert("Timeout!!")
+  				}
+  				*/
+
+  				rawFile.send(null);
+  			}
+  			catch(exception)
+  			{
+  				//alert(exception);
+  				rawFile.abort();
+
+  				return;
+  			}
+  		}
+
+  		function wait(ms)
+  		{
+  			var start = new Date().getTime();
+  			var end = start;
+			
+  			while(end < start + ms)
+  			{
+  				end = new Date().getTime();
+  			}
+  		}
+
+  		function returnedStatusInfo(currentRawStatusJson)
+  		{
+  			var currentStatusJson;
+
+  			//alert(currentRawStatusJson);
+
+  			if (currentRawStatusJson == "")
+  			{
+  				document.getElementById("bottomLeftText").innerHTML = "<h3>Radio is Currently Offline</h3>";
+				//document.getElementById("albumImage").src = "files/covers/cover.jpg";
+				document.getElementById("albumImage").title = "Touhou Cafe Radio";
+				currentlyOffline = true;
+
+  				return;
+  			}
+  			else
+  			{
+  				currentStatusJson = JSON.parse(currentRawStatusJson);
+
+  				if (currentStatusJson.icestats.source[0] == null)
+  				{
+  					if (currentStatusJson.icestats == null)
+  					{
+  						document.getElementById("bottomLeftText").innerHTML = "<h3>Radio is Currently Offline</h3>";
+						//document.getElementById("albumImage").src = "files/covers/cover.jpg";
+						document.getElementById("albumImage").title = "Touhou Cafe Radio";
+						currentlyOffline = true;
+  		      }
+  					else
+  					{
+  						//document.getElementById("bottomLeftText").innerHTML = "<h4><i>Girls are now preparing. Please wait warmly...</i></h4>";
+						document.getElementById("bottomLeftText").innerHTML = "<h3>Currently Playing: Nothing</h3>";
+						//document.getElementById("albumImage").src = "files/covers/cover.jpg";
+						document.getElementById("albumImage").title = "Touhou Cafe Radio";
+  					}
+  				}
+  				else
+  				{
+            if (currentlyOffline == true)
+            {
+              //document.getElementById("bottomLeftText").innerHTML = "<h2><strong><i>Radio has Gone Online: Please Refresh!</i></strong></h2>";
+
+              if (document.hasFocus())
+              {
+                reloadRadio();
+
+                currentlyOffline = false;
+              }
+            }
+
+            var radioListeners = currentStatusJson.icestats.source[0].listeners;
+            var radioPlaying = currentStatusJson.icestats.source[0].title;
+
+            var displayRadioPlaying = radioPlaying;
+            displayRadioPlaying = displayRadioPlaying.substring(displayRadioPlaying.indexOf("-") + 2, displayRadioPlaying.length)
+
+            if (displayRadioPlaying.length > maximumSongTitleLength)
+            {
+              displayRadioPlaying = displayRadioPlaying.substring(0, maximumSongTitleLength) + "..";
+            }
+
+            var currentAlbumPlaying = radioPlaying.substring(0, radioPlaying.indexOf('-') - 1);
+
+            document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: " + radioListeners + "</h3><h5>Playing: " + displayRadioPlaying + "</h5>";
+
+            if (disableAlbumCovers)
+            {
+              //document.getElementById("albumImage").src = "files/covers/cover.jpg";
+              document.getElementById("albumImage").title = "Touhou Cafe Radio";
+            }
+            else
+            {
+			  //if (currentAlbumPlaying == "Neo–traditionalism of Japan")
+			  //if (currentAlbumPlaying.startsWith("Neo"))
+			  if (currentAlbumPlaying == "Neo&#8211;traditionalism of Japan")
+			  {
+				currentAlbumPlaying = "Neo-traditionalism of Japan";
+			  }
+			
+              document.getElementById("albumImage").src = "files/covers/" + currentAlbumPlaying + ".jpg";
+			  document.getElementById("albumImage").title = currentAlbumPlaying;
+			  
+			  /*
+              if (currentAlbumPlaying.startsWith("Th"))
+              {
+                var stringAlbumPlaying = "Touhou Cafe Radio";
+
+                stringAlbumPlaying = currentAlbumPlaying.substring(2, currentAlbumPlaying.length);
+
+                if (stringAlbumPlaying.startsWith("0"))
+                {
+                  stringAlbumPlaying = stringAlbumPlaying.substring(1, stringAlbumPlaying.length);
+                }
+
+                document.getElementById("albumImage").title = "Touhou " + stringAlbumPlaying;
+              }
+              else
+              {
+                document.getElementById("albumImage").title = currentAlbumPlaying;
+              }
+			  */
+            }
+  				}
+  			}
+  		}
+
+  		function reloadRadio()
+  		{
+  			document.getElementById('radioPlayerIframe').src += '';
+  		}
+
+  		function getNewStatusInfo()
+  		{
+  			readTextFile(protocolType + "RADIO URL:" + icecastPort + "/status-json.xsl");
+  		}
+
+  		function init()
+  		{
+			disregardTimeWallpapersBox.checked = false;
+			stopBackgroundChangingBox.checked = false;
+			
+			hideSettingsBox.checked = false;
+			
+			hideRadioTitleBox.checked = false;
+			hideRadioControls.checked = false;
+			
+			hideRadio.checked = false;
+
+			disableSongInformationBox.checked = false;
+			disableAlbumCoversBox.checked = false;
+			stopAlbumCoverChangingBox.checked = false;
+			
+			hideAmbience.checked = false;
+			
+			hideBottomMiddle.checked = false;
+
+			if (location.protocol != 'https:')
+			{
+			  protocolType = "http://";
+			  icecastPort = 8000;
+			}
+			else
+			{
+			  protocolType = "https://";
+			  icecastPort = 8443;
+			}
+
+			changeWallpaper();
+
+			wallpaperInterval = setTimeout(changeWallpaper, wallpaperIntervalTime);
+			wallpaperPreloadInterval = setTimeout(preLoadNextWallpaper, wallpaperPreloadIntervalTime);
+
+			getNewStatusInfo();
+
+			setInterval(getNewStatusInfo, 5000);
+  		}
+
+  		function changeWallpaper()
+  		{
+		if (disableWallpapers)
+		{
+		  return;
+		}
+		
+        if (changingWallpaper == true)
+        {
+          return;
+        }
+
+        changingWallpaper = true;
+
+        //clearTimeout(parseInt(wallpaperInterval));
+        //clearTimeout(parseInt(wallpaperPreloadInterval));
+        clearTimeout(wallpaperInterval);
+        clearTimeout(wallpaperPreloadInterval);
+
+        wallpaperInterval = setTimeout(changeWallpaper, wallpaperIntervalTime);
+        wallpaperPreloadInterval = setTimeout(preLoadNextWallpaper, wallpaperPreloadIntervalTime);
+
+        var hourTime;
+
+        if (disregardTimeWallpapers == false)
+        {
+          var hours = parseInt((new Date).getHours());
+
+    			if (hours <= 5)
+    			{
+    				hourTime = "NIGHT";
+    			}
+    			if (hours <= 7 && hours >= 6)
+    			{
+    				hourTime = "SUNRISE";
+    			}
+    			if (hours <= 16 && hours >= 8)
+    			{
+    				hourTime = "DAY";
+    			}
+    			if (hours <= 18 && hours >= 17)
+    			{
+    				hourTime = "SUNSET";
+    			}
+    			if (hours >= 19)
+    			{
+    				hourTime = "NIGHT";
+    			}
+
+    			if (hourTime == "SUNRISE")
+    			{
+    				hourTime = "SUN";
+    			}
+    			if (hourTime == "SUNSET")
+    			{
+    				hourTime = "SUN";
+    			}
+        }
+        else
+        {
+          hourTime = randomHourTime();
+        }
+
+  			var imagesAvailable
+
+  			if (hourTime == "SUN")
+  			{
+          if (disregardTimeWallpapers)
+          {
+            currentTimeString = "Disregarded";
+          }
+          else
+          {
+            currentTimeString = "Sun";
+          }
+
+  				imagesAvailable = sunImagesAvailable;
+  			}
+  			if (hourTime == "DAY")
+  			{
+          if (disregardTimeWallpapers)
+          {
+            currentTimeString = "Disregarded";
+          }
+          else
+          {
+            currentTimeString = "Day";
+          }
+
+  				imagesAvailable = dayImagesAvailable;
+  			}
+  			if (hourTime == "NIGHT")
+  			{
+          if (disregardTimeWallpapers)
+          {
+            currentTimeString = "Disregarded";
+          }
+          else
+          {
+            currentTimeString = "Night";
+          }
+
+  				imagesAvailable = nightImagesAvailable;
+  			}
+
+        var currentWallpaper = document.getElementById("wallpaperImage2");
+
+        if (nextWallpaper == "")
+        {
+		  wallpaper = getRandomWallpaper(imagesAvailable, hourTime);
+		  if (hourTime == "SUN")
+			{
+				urlToUse = 'files/wallpapers/' + sunWallpapers[wallpaper][0]
+				source = sunWallpapers[wallpaper][2]
+			}
+			if (hourTime == "DAY")
+			{
+				urlToUse = 'files/wallpapers/' + dayWallpapers[wallpaper][0]
+				source = sunWallpapers[wallpaper][2]
+			}
+			if (hourTime == "NIGHT")
+			{
+				urlToUse = 'files/wallpapers/' + nightWallpapers[wallpaper][0]
+				source = sunWallpapers[wallpaper][2]
+			}
+			if (hourTime == "Disregarded")
+			{
+				urlToUse = 'files/wallpapers/' + wallpapers[wallpaper][0]
+				source = sunWallpapers[wallpaper][2]
+			}
+          currentWallpaper.style.backgroundImage = 'url(' + urlToUse + ')';
+
+			wallpaper = getRandomWallpaper(imagesAvailable, hourTime);
+		  if (hourTime == "SUN")
+			{
+				urlToUse = 'files/wallpapers/' + sunWallpapers[wallpaper][0]
+				source = sunWallpapers[wallpaper][2]
+			}
+			if (hourTime == "DAY")
+			{
+				urlToUse = 'files/wallpapers/' + dayWallpapers[wallpaper][0]
+				source = dayWallpapers[wallpaper][2]
+			}
+			if (hourTime == "NIGHT")
+			{
+				urlToUse = 'files/wallpapers/' + nightWallpapers[wallpaper][0]
+				source = nightWallpapers[wallpaper][2]
+			}
+			if (hourTime == "Disregarded")
+			{
+				urlToUse = 'files/wallpapers/' + wallpapers[wallpaper][0]
+				source = wallpapers[wallpaper][2]
+			}
+          nextWallpaper = urlToUse
+
+          changingWallpaper = false;
+		  
+		  document.getElementById("bottomRightText").innerHTML="<h3>Support the Artists!</br>Background Artist: <a href='" + source + "'>" + source + "</a></br>Buy the Album: <a href='https://ddby.jp/cafedetouhou3/'>https://ddby.jp/cafedetouhou3/</a></h3>";
+        }
+        else
+        {
+          if (wallpaperPreloaded == false)
+          {
+            document.getElementById("wallpaperImage1").style.backgroundImage = 'url(' + nextWallpaper + ')';
+          }
+
+          //document.getElementById("wallpaperImage2").animate({opacity: 0}, 0).css({'background-image': 'url(' + nextWallpaper + ')'}).animate({opacity: 1}, 2500);
+          new function() {
+            FX.fadeOut(currentWallpaper,
+            {
+              duration: 1000,
+              complete: function()
+              {
+                  wallpaperPreloaded = false;
+
+                  currentWallpaper.style.backgroundImage = 'url(' + nextWallpaper + ')';
+                  currentWallpaper.style.opacity = 1;
+
+					wallpaper = getRandomWallpaper(imagesAvailable, hourTime);
+		  if (hourTime == "SUN")
+			{
+				urlToUse = 'files/wallpapers/' + sunWallpapers[wallpaper][0]
+				source = sunWallpapers[wallpaper][2]
+			}
+			if (hourTime == "DAY")
+			{
+				urlToUse = 'files/wallpapers/' + dayWallpapers[wallpaper][0]
+				source = dayWallpapers[wallpaper][2]
+			}
+			if (hourTime == "NIGHT")
+			{
+				urlToUse = 'files/wallpapers/' + nightWallpapers[wallpaper][0]
+				source = nightWallpapers[wallpaper][2]
+			}
+			if (hourTime == "Disregarded")
+			{
+				urlToUse = 'files/wallpapers/' + wallpapers[wallpaper][0]
+				source = wallpapers[wallpaper][2]
+			}
+                  nextWallpaper = urlToUse
+
+                  changingWallpaper = false;
+              }
+            });
+          }
+        }
+  		}
+
+      function randomHourTime()
+      {
+        var randomHourTime = Math.floor(Math.random() * 3);
+        var hourTime;
+
+        //alert(randomHourTime);
+
+        if (randomHourTime == 0)
+        {
+          hourTime = "SUN";
+        }
+        if (randomHourTime == 1)
+        {
+          hourTime = "DAY";
+        }
+        if (randomHourTime == 2)
+        {
+          hourTime = "NIGHT";
+        }
+
+        return hourTime;
+      }
+
+      function preLoadNextWallpaper()
+      {
+		if (disableWallpapers)
+		{
+			return;
+		}
+		
+        //var my_image = new Image();
+        //my_image.src = nextWallpaper;
+
+        //document.getElementById("preloadedImage").style.backgroundImage = 'url(' + nextWallpaper + ')';
+        document.getElementById("wallpaperImage1").style.backgroundImage = 'url(' + nextWallpaper + ')';
+
+        wallpaperPreloaded = true;
+      }
+
+      function getRandomWallpaper(imagesAvailable, hourTime)
+      {
+        if (imagesAvailable > 0)
+  			{
+          var randomNumber;
+
+          var urlToUse;
+  				var urlWorked = false;
+
+          if (disregardTimeWallpapers)
+          {
+            hourTime = randomHourTime();
+
+            if (hourTime == "SUN")
+            {
+              imagesAvailable = sunImagesAvailable;
+            }
+            if (hourTime == "DAY")
+            {
+              imagesAvailable = dayImagesAvailable
+            }
+            if (hourTime == "NIGHT")
+            {
+              imagesAvailable = nightImagesAvailable;
+            }
+          }
+		  if (hourTime == "Disregarded")
+		  {
+			imagesAvailalbe = wallpapers.length;
+		  }
+
+  				while (urlWorked == false)
+  				{
+  					randomNumber = Math.floor(Math.random() * imagesAvailable);
+
+  					//urlToUse = 'files/wallpapers/' + hourTime + '-' + randomNumber + '.jpg';
+					if (hourTime == "SUN")
+					{
+						urlToUse = 'files/wallpapers/' + sunWallpapers[randomNumber][0]
+					}
+					if (hourTime == "DAY")
+					{
+						urlToUse = 'files/wallpapers/' + dayWallpapers[randomNumber][0]
+					}
+					if (hourTime == "NIGHT")
+					{
+						urlToUse = 'files/wallpapers/' + nightWallpapers[randomNumber][0]
+					}
+					if (hourTime == "Disregarded")
+					{
+						urlToUse = 'files/wallpapers/' + wallpapers[randomNumber][0]
+					}
+
+            //alert("\"" + urlToUse + "\"" + " | " + document.getElementById("wallpaperImage1").style.backgroundImage.replace('url(','').replace(')',''));
+  					//if ("\"" + urlToUse + "\"" != document.getElementById("wallpaperImage2").style.backgroundImage.replace('url(','').replace(')',''))
+            //{
+  						urlWorked = true;
+  					//}
+            //if (urlToUse != document.getElementById("wallpaperImage1").src)
+  				}
+  			}
+  			//else
+  			//{
+  				//urlToUse = 'https://epicfisher.keybase.pub/files/Touhou%20Cafe%20Radio/wallpaper.jpg';
+  			//}
+
+        return randomNumber;
+      }
+
+      function showAbout()
+      {
+        document.getElementById("currentTimeOutput").innerHTML = currentTimeString;
+
+        document.getElementById("sunWallpapersOutput").innerHTML = sunImagesAvailable;
+        document.getElementById("dayWallpapersOutput").innerHTML = dayImagesAvailable;
+        document.getElementById("nightWallpapersOutput").innerHTML = nightImagesAvailable;
+        document.getElementById("totalWallpapersOutput").innerHTML = sunImagesAvailable + dayImagesAvailable + nightImagesAvailable;
+
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("overlayAbout").style.display = "block";
+      }
+
+      function hideAbout()
+      {
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("overlayAbout").style.display = "none";
+      }
+
+      function showSounds()
+      {
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("overlaySounds").style.display = "block";
+      }
+
+      function hideSounds()
+      {
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("overlaySounds").style.display = "none";
+      }
+
+      function showSettings()
+      {
+        document.getElementById("overlay").style.display = "block";
+        document.getElementById("overlaySettings").style.display = "block";
+      }
+
+      function hideSettings()
+      {
+        document.getElementById("overlay").style.display = "none";
+        document.getElementById("overlaySettings").style.display = "none";
+      }
+
+  		function openCurrentWallpaper()
+  		{
+        window.open(document.getElementById("wallpaperImage2").style.backgroundImage.replace(/(url\(|\)|")/g, ''), '_BLANK');
+  		}
+  	</script>
+  </head>
+
+  <body onload="init();" style="overflow: hidden; background-color: #000000; color: #FFFFFF;">
+    <div id="wallpapers">
+      <div id="wallpaperImage1" class="wallpaperimage"></div>
+      <div id="wallpaperImage2" class="wallpaperimage"></div>
+    </div>
+
+  	<div id="topMiddleDiv" class="shadowtext" style="position: absolute; left: 50%; top: 55px; transform: translate(-50%, -50%);">
+  		<center>
+  			<div id="radioTitle">
+				<h1 style="float: left;"><big><big>Touhou Cafe Radio</big></big></h1>
+				<h4 style="float: right; margin-top: 47px; margin-left: 6px;">WIP~!</h4>
+				<!--<h4 style="margin-top: 47px; margin-left: 6px;">Work In Progress~!</h4>-->
+			</div>
+			</br>
+			</br>
+
+			<div id="radioControls">
+				<button onclick="window.open('mobile.html', '_SELF');">Mobile Version</button>
+				<button onclick="window.open('player.html', '_SELF');">Standalone Player</button>
+				<button onclick="window.open('minimal.html', '_SELF')">Minimalistic Version</button>
+				<button onclick="reloadRadio();">Reload Radio</button>
+			</div>
+  		</center>
+  	</div>
+
+    <div id="overlay" class="shadowtext" style="position: fixed; display: none; width: 100%; height: 100%; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 2;">
+      <div id="overlayAbout" style="position: absolute; display: none; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 600px; background-color: #000000;">
+        <center><h1>owo what's this</h1><hr><br>
+        Welcome to Touhou Cafe Radio!<br>Randomly Playing Cafe Touhou Songs!<br><br>
+        The Time is Currently: <strong><span id="currentTimeOutput"></span></strong><br><br>
+        Background Cycle Pool:
+        <list>
+          <li><strong><span id="sunWallpapersOutput"></span></strong> Sunrise/Sunset Backgrounds</li>
+          <li><strong><span id="dayWallpapersOutput"></span></strong> Daytime Backgrounds</li>
+          <li><strong><span id="nightWallpapersOutput"></span></strong> Nighttime Backgrounds</li>
+          <br><li><strong><span id="totalWallpapersOutput"></span></strong> Total Backgrounds</li>
+        </list>
+        <br>
+        <button onclick="hideAbout();"><!--ALRIGHT NOW GET OUT OF THE WAY YOU'RE OBSTRUCTING THE BACKGROUNDS-->Close</button><br><br>
+        <hr><br><a href="mailto:theprogrammerdan@gmail.com"><button>Contact Me</button></a><h6>(Feel free to get in touch if you have any suggestions, or own copyrighted material that you want removed)</h6>
+        <h2><i>Made By <a href="https://github.com/Epicfisher" target="_BLANK_" style="color: white;">Epicfisher</a>, 2017-2022</i></h2></center>
+      </div>
+      <div id="overlaySounds" style="position: absolute; display: none; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 550px; background-color: #000000;">
+        <center><h1>Ambience Sounds</h1><hr><strong>
+        <!--Crackling Fireplace:<br><audio controls loop src="files/sounds/crackle-fireplace2.mp3" preload="none"></audio><br><hr><br>-->
+        <!--Fireplace:<br><audio controls loop src="files/sounds/fireplace.wav" preload="none"></audio><br><hr><br>-->
+        <!--Crickets:<br><audio controls loop src="files/sounds/crickets.wav" preload="none"></audio><br><hr><br>-->
+        Rain:<br><audio controls loop src="files/sounds/rain.wav" preload="none"></audio><br><hr>
+        </strong><br><button onclick="hideSounds();">Close</button><br><br>
+      </div>
+      <div id="overlaySettings" style="position: absolute; display: none; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 550px; background-color: #000000;">
+        <center><h1>Settings</h1><hr><strong>
+		<center>
+        <!--<input id="dontChangeBackgroundsBox" type="checkbox" onclick="if(this.checked){clearTimeout(wallpaperInterval);clearTimeout(wallpaperPreloadInterval);}else{wallpaperInterval = setTimeout(changeWallpaper, wallpaperIntervalTime);wallpaperPreloadInterval = setTimeout(preLoadNextWallpaper, wallpaperPreloadIntervalTime);}"> - Don't Change Backgrounds<br>-->
+        <input id="disregardTimeWallpapersBox" type="checkbox" onclick="if(this.checked){disregardTimeWallpapers = true;}else{disregardTimeWallpapers = false;}"> - Use All Backgrounds Regardless of Time<br>
+		<!--<input id="stopBackgroundChangingBox" type="checkbox" onclick="if(this.checked){document.getElementById('wallpaperImage2').style.backgroundImage = 'url(wallpaper.jpg)';disableWallpapers = true;}else{disableWallpapers = false;}"> - Use Default Background<br>-->
+		<input id="stopBackgroundChangingBox" type="checkbox" onclick="if(this.checked){nextWallpaper = 'wallpaper';changeWallpaper();disableWallpapers = true;}else{disableWallpapers = false;changeWallpaper();}"> - Use Default Background<br>
+		<br>
+		<input id="hideSettingsBox" type="checkbox" onclick="if(this.checked){document.getElementById('topLeftText').style.display='none';}else{document.getElementById('topLeftText').style.display='block';}"> - Hide Settings<br>
+        <br>
+        <input id="hideRadioTitleBox" type="checkbox" onclick="if(this.checked){document.getElementById('radioTitle').style.display='none';document.getElementById('topMiddleDiv').style.top = '42px';}else{document.getElementById('radioTitle').style.display='block';document.getElementById('topMiddleDiv').style.top = '55px';}"> - Hide Radio Title<br>
+		<input id="hideRadioControls" type="checkbox" onclick="if(this.checked){document.getElementById('radioControls').style.display='none';}else{document.getElementById('radioControls').style.display='block';}"> - Hide Radio Buttons<br>
+        <br>
+		<input id="hideRadio" type="checkbox" onclick="if(this.checked){document.getElementById('radioPlayer').style.display='none';}else{document.getElementById('radioPlayer').style.display='block';}"> - Hide Radio<br>
+		<br>
+        <input id="disableSongInformationBox" type="checkbox" onclick="if(this.checked){document.getElementById('bottomLeftText').style.display='none';}else{document.getElementById('bottomLeftText').style.display='block';}"> - Hide Radio Information / Status<br>
+        <input id="disableAlbumCoversBox" type="checkbox" onclick="if(this.checked){document.getElementById('albumImage').style.display='none';maximumSongTitleLength = 75;disableAlbumCovers = true;}else{document.getElementById('albumImage').style.display='block';maximumSongTitleLength = 56;disableAlbumCovers = false;}"> - Hide Album Cover<br>
+        <input id="stopAlbumCoverChangingBox" type="checkbox" onclick="if(this.checked){document.getElementById('albumImage').src = 'files/cover/cover.jpg';document.getElementById('albumImage').title = 'Touhou Cafe Radio';disableAlbumCovers = true;}else{disableAlbumCovers = false;}"> - Use Default Album Cover<br>
+		<br>
+		<input id="hideAmbience" type="checkbox" onclick="if(this.checked){document.getElementById('topRightText').style.display='none';}else{document.getElementById('topRightText').style.display='block';}"> - Hide Ambience Sounds<br>
+		<br>
+		<input id="hideBottomMiddle" type="checkbox" onclick="if(this.checked){document.getElementById('bottomMiddle').style.display='none';}else{document.getElementById('bottomMiddle').style.display='block';}"> - Hide Miscellaneous Controls<br>
+        <hr></strong><br><button onclick="hideSettings();">Close</button><br><br></center>
+      </div>
+    </div>
+
+    <br><br>
+
+  	<center><div class="shadowtext aligncenter" id="radioPlayer" style="opacity: 0.8;">
+  	  <!--<iframe src="player.html" width="277" height="102" scrolling="no" frameborder="0">-->
+  	  <!--<iframe allow="autoplay;" id="radioPlayerIframe" src="player.html" width="277" height="82" scrolling="no" frameborder="0"></iframe>-->
+	  <audio autoplay controls> <source src="https://touhou-radio.herokuapp.com/live.ogg"> </audio>
+    </div></center>
+
+    <div id="bottomMiddle" class="shadowtext" style="position: absolute; bottom: 16px; width: 100%;">
+      <center>
+        Download:
+        <button onclick="window.open('https://touhou-radio.herokuapp.com/live.ogg.m3u', '_BLANK')">M3U</button>
+        Or
+        <button onclick="window.open('https://touhou-radio.herokuapp.com/live.ogg.xspf', '_BLANK')">XSPF</button>
+		
+        <br><button onclick="openCurrentWallpaper();">Background Image</button> | <button onclick="changeWallpaper();">Next Background</button>
+
+        <br><br><button onclick="showAbout();">About</button>
+      </center>
+    </div>
+
+    <div id="topLeftText" style="position: fixed; top: 30px; left: 30px;"><button onclick="showSettings();">Settings</button></div>
+
+	<!--
+    <div id="topRightText" style="position: fixed; top: 30px; right: 30px;"><button onclick="showSounds();">Ambience Sounds</button></div>
+	-->
+
+	<!--
+    <div id="bottomLeft" style="position: absolute; bottom: 0px; left: 30px; bottom: 15px;">
+      <img id="albumImage" src="files/covers/cover.jpg" title="Touhou Cafe Radio" onclick="window.open(this.src, '_BLANK');" onerror="this.src = 'files/covers/cover.jpg';this.title = 'Touhou Cafe Radio';" style="float: left; width: 100px; height: 100px; cursor: pointer;"></img>
+  	  <div class="shadowtext" id="bottomLeftText" style="float: right; margin-left: 12px;"><br><br><h5><i>Girls are now preparing. Please wait warmly...</i></h5></div>
+    </div>
+	-->
+
+  	<div class="shadowtext" id="bottomRightText" style="position: fixed; bottom: 0px; right: 30px; text-align: right;">
+		<h3>Support the Artists!</h3>
+	</div>
+  </body>
+</html>
