@@ -17,6 +17,17 @@
     <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>-->
 
     <script type='text/javascript'>
+	navigator.serviceWorker.register('worker.min.js')
+	
+	navigator.serviceWorker.addEventListener('message', event => {
+    if(event.origin != 'https://epicfisher.github.io/touhou-cafe-radio/'){
+        return;
+    }
+    var meta = event.data.msg;
+    meta = meta.substring(meta.indexOf("'") + 1,meta.lastIndexOf("'"));
+    console.log(meta);
+});
+
 	  // Wallpaper Array: ["Image URL", "Image Time Identifier", "Image Source"]
 	  var wallpapers = [
 		["4d14be4d7081ce578770f7cbeefcc7a9.jpg", "DAY", "https://www.pixiv.net/en/artworks/42967838"],
