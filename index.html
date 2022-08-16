@@ -15,17 +15,18 @@
     <meta property="og:audio" content="https://touhou-radio.herokuapp.com/live.ogg">
 
     <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>-->
-      
+
     <script src="icecast-metadata-player-1.12.3.min.js"></script>
     <script type='text/javascript'>
     const player = new IcecastMetadataPlayer("https://touhou-radio.herokuapp.com/live.ogg",
     {
       onMetadata: (metadata) => {
         console.log(metadata);
-        document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: ???</h3><h5>Now Playing: ???</h5>";
+        document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: ???</h3><h5>Now Playing: " + metadata.ARTIST + " - " + metadata.TITLE + " (" + metadata.ALBUMARTIST + " - " + metadata.ALBUM + ")</h5>";
       },
       metadataTypes: ["ogg"]
     })
+
 	  // Wallpaper Array: ["Image URL", "Image Time Identifier", "Image Source"]
 	  var wallpapers = [
 		["4d14be4d7081ce578770f7cbeefcc7a9.jpg", "DAY", "https://www.pixiv.net/en/artworks/42967838"],
@@ -571,7 +572,7 @@
 
           changingWallpaper = false;
 		  
-		  document.getElementById("bottomRightText").innerHTML="<h3>Support the Artists!</br>Background Artist: <a href='" + source + "' target='_BLANK_'>" + source + "</a></br>Buy the Album: <a href='https://ddby.jp/cafedetouhou3/' target='_BLANK_'>https://ddby.jp/cafedetouhou3/</a></h3>";
+		  document.getElementById("bottomRightText").innerHTML="<h3>Support the Artists!</h3><h5>Background Artist: <a href='" + source + "' target='_BLANK_'>" + source + "</a></br>Buy the Album: <a href='https://ddby.jp/cafedetouhou3/' target='_BLANK_'>https://ddby.jp/cafedetouhou3/</a></h5>";
         }
         else
         {
