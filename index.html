@@ -17,28 +17,66 @@
     <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>-->
 
     <script src="icecast-metadata-player-1.12.3.min.js"></script>
+
     <script type='text/javascript'>
     const player = new IcecastMetadataPlayer("https://touhou-radio.herokuapp.com/live.ogg",
     {
       onMetadata: (metadata) => {
         console.log(metadata);
-        document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: ???</h3><h5>Now Playing: " + metadata.ARTIST + " - " + metadata.TITLE + " (" + metadata.ALBUMARTIST + " - " + metadata.ALBUM + ")</h5>";
+        var album = metadata.ALBUM;
+        var date = metadata.DATE;
+        if(date.includes('-'))
+        {
+          date = date.substring(0, date.indexOf('-'));
+        }
+
+        // Update Now Playing:
+        document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: ???</h3><h5>Now Playing: " + metadata.ARTIST + " - " + metadata.TITLE + " (" + metadata.ALBUMARTIST + " - " + album + ") [" + date + "]</h5>";
+
+        // Update Album Link
+        var albumLink = "Unknown";
+        for(var i = 0; i < albumLinks.length; i++)
+        {
+          if(albumLinks[i][0] == album)
+          {
+            albumLink = albumLinks[i][1];
+            break;
+          }
+        }
+        document.getElementById("albumLink").innerHTML="Buy the Album: <a href='" + albumLink + "' target='_BLANK_'>" + albumLink + "</a>"
+
+        // Update Album Cover
+        document.getElementById("albumImage").src = "files/covers/" + album + ".jpg";
+			  document.getElementById("albumImage").title = album;
       },
       metadataTypes: ["ogg"]
     })
 
 	  // Wallpaper Array: ["Image URL", "Image Time Identifier", "Image Source"]
 	  var wallpapers = [
-		["4d14be4d7081ce578770f7cbeefcc7a9.jpg", "DAY", "https://www.pixiv.net/en/artworks/42967838"],
-		["ecfc07be591d35018b20456ab1400f60.jpg", "NIGHT", "https://www.pixiv.net/en/artworks/74784230"],
-		["f7af909e2992d9a3254a0386eded448c.jpg", "SUN", "https://www.pixiv.net/en/artworks/49268642"],
-		["feefda19f236d0c4459156263a8f5c09.jpg", "SUN", "https://www.pixiv.net/en/artworks/73691792"]
+      ["4d14be4d7081ce578770f7cbeefcc7a9.jpg", "DAY", "https://www.pixiv.net/en/artworks/42967838"],
+      ["ecfc07be591d35018b20456ab1400f60.jpg", "NIGHT", "https://www.pixiv.net/en/artworks/74784230"],
+      ["f7af909e2992d9a3254a0386eded448c.jpg", "SUN", "https://www.pixiv.net/en/artworks/49268642"],
+      ["feefda19f236d0c4459156263a8f5c09.jpg", "SUN", "https://www.pixiv.net/en/artworks/73691792"]
 	  ];
 
-    var supportAlbums = [
+    var albumLinks = [
+      //["幻想郷茶房 ～tea for two～", "https://spritewing.com/"]
+      ["幻想郷茶房 ~tea for two~", "https://spritewing.com/"],
+      ["Cirno out #1", "https://ec.toranoana.jp/tora_r/ec/item/040030441684/"],
+      ["Cirno out #2", "http://www.akibaoo.com/c/item/2500020422694/"],
       ["Cafe de Touhou", "https://ddby.jp/cafedetouhou/"],
       ["Cafe de Touhou 2", "https://ddby.jp/cafedetouhou2/"],
-      ["Cafe de Touhou 3", "https://ddby.jp/cafedetouhou3/"]
+      ["Cafe de Touhou 3", "https://ddby.jp/cafedetouhou3/"],
+      ["The Lounge Map 1 - morning coffee set", "http://orangecoffee.sarashi.com/lm1/"],
+      ["The Lounge Map 2 - afternoon tea set", "http://orangecoffee.sarashi.com/lm2/"],
+      ["The Lounge Map 3 - evening caffellatte set", "http://orangecoffee.sarashi.com/lm3/"],
+      ["du Cafe’", "https://www.melonbooks.co.jp/circle/index.php?circle_id=99006503"],
+      ["du Cafe’ due", "https://www.melonbooks.co.jp/circle/index.php?circle_id=99006503"],
+      ["du Cafe’ tre", "https://www.melonbooks.co.jp/circle/index.php?circle_id=99006503"]
+      //["du Cafe’", "https://web.archive.org/web/20110526044924/http://triangler.net/archives/1004"],
+      //["du Cafe’ due", "https://web.archive.org/web/20130628020448/http://triangler.net/works/PAER-0043/"],
+      //["du Cafe’ tre", "https://web.archive.org/web/20130426005914/http://triangler.net/archives/1646"],
     ]
 
 	  //alert(wallpapers[0][0]);
@@ -579,7 +617,7 @@
 
           changingWallpaper = false;
 		  
-		  document.getElementById("bottomRightText").innerHTML="<h3>Support the Artists!</h3><h5>Background Artist: <a href='" + source + "' target='_BLANK_'>" + source + "</a></br>Buy the Album: <a href='https://ddby.jp/cafedetouhou3/' target='_BLANK_'>https://ddby.jp/cafedetouhou3/</a></h5>";
+		  document.getElementById("backgroundLink").innerHTML="Background Artist: <a href='" + source + "' target='_BLANK_'>" + source + "</a>";
         }
         else
         {
@@ -895,11 +933,16 @@
 
     <div id="bottomLeft" style="position: absolute; bottom: 0px; left: 30px; bottom: 15px;">
       <!--<img id="albumImage" src="files/covers/cover.jpg" title="Touhou Cafe Radio" onclick="window.open(this.src, '_BLANK');" onerror="this.src = 'files/covers/cover.jpg';this.title = 'Touhou Cafe Radio';" style="float: left; width: 100px; height: 100px; cursor: pointer;"></img>-->
+      <img id="albumImage" src="files/covers/cover.jpg" title="Touhou Cafe Radio" onclick="window.open(this.src, '_BLANK');" style="float: left; width: 100px; height: 100px; cursor: pointer;"></img>
   	  <div class="shadowtext" id="bottomLeftText" style="float: right; margin-left: 12px;"><br><br><h5><i>Girls are now preparing. Please wait warmly...</i></h5></div>
     </div>
 
   	<div class="shadowtext" id="bottomRightText" style="position: fixed; bottom: 0px; right: 30px; text-align: right;">
-		<h3>Support the Artists!</h3>
+      <h3>Support the Artists!</h3>
+        <h5>
+          <div id="backgroundLink"></div>
+          <div id="albumLink"></div>
+        </h5>
 	</div>
   </body>
 </html>
