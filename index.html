@@ -15,18 +15,17 @@
     <meta property="og:audio" content="https://touhou-radio.herokuapp.com/live.ogg">
 
     <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>-->
-
+      
+    <script src="icecast-metadata-player-1.12.3.min.js"></script>
     <script type='text/javascript'>
-	navigator.serviceWorker.register('worker.min.js')
-	
-	navigator.serviceWorker.addEventListener('message', event => {
-    if(event.origin != 'https://epicfisher.github.io/touhou-cafe-radio/'){
-        return;
-    }
-    var meta = event.data.msg;
-    meta = meta.substring(meta.indexOf("'") + 1,meta.lastIndexOf("'"));
-    console.log(meta);
-});
+    const onMetadata = (metadata) => {
+      document.getElementById("metadata").innerHTML = metadata.StreamTitle;
+    };
+    const player = 
+      new IcecastMetadataPlayer(
+        "https://touhou-radio.herokuapp.com/",
+        { onMetadata }
+      );
 
 	  // Wallpaper Array: ["Image URL", "Image Time Identifier", "Image Source"]
 	  var wallpapers = [
@@ -863,7 +862,10 @@
   	<center><div class="shadowtext aligncenter" id="radioPlayer" style="opacity: 0.8;">
   	  <!--<iframe src="player.html" width="277" height="102" scrolling="no" frameborder="0">-->
   	  <!--<iframe allow="autoplay;" id="radioPlayerIframe" src="player.html" width="277" height="82" scrolling="no" frameborder="0"></iframe>-->
-	  <audio autoplay controls> <source src="https://touhou-radio.herokuapp.com/live.ogg"> </audio>
+	  <!--<audio autoplay controls> <source src="https://touhou-radio.herokuapp.com/live.ogg"> </audio>-->
+    <button onclick="player.play();"> Play </button>
+  <button onclick="player.stop();"> Stop </button>
+  <p> Now Playing: <span id="metadata"></span> </p>
     </div></center>
 
     <div id="bottomMiddle" class="shadowtext" style="position: absolute; bottom: 16px; width: 100%;">
