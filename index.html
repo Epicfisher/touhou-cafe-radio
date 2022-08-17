@@ -1,17 +1,17 @@
 <html>
   <head>
-    <title>Touhou Cafe Radio</title>
+    <title>Touhou Café Radio</title>
 
-    <meta name="description" content="Randomly Playing Cafe Touhou Songs!">
-    <meta name="keywords" content="cafe, radio, touhou, japanese, music, doujin, arrange">
+    <meta name="description" content="Randomly Playing Café Touhou Songs!">
+    <meta name="keywords" content="cafe, café, radio, touhou, japanese, music, doujin, arrange">
     <meta name="author" content="Epicfisher">
 
-    <meta property="og:title" content="Touhou Cafe Radio">
+    <meta property="og:title" content="Touhou Café Radio">
     <meta property="og:type" content="music.radio_station">
     <meta property="og:image" content="empty">
     <meta property="og:url" content="empty">
 
-    <meta property="og:description" content="Randomly Playing Cafe Touhou Songs!">
+    <meta property="og:description" content="Randomly Playing Café Touhou Songs!">
     <meta property="og:audio" content="https://touhou-radio.herokuapp.com/live.ogg">
 
     <!--<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>-->
@@ -25,10 +25,7 @@
         console.log(metadata);
         var album = metadata.ALBUM;
         var date = metadata.DATE;
-        if(date.includes('-'))
-        {
-          date = date.substring(0, date.indexOf('-'));
-        }
+        if(date.includes('-')) { date = date.substring(0, date.indexOf('-')); }
 
         // Update Now Playing:
         document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: ???</h3><h5>Now Playing: " + metadata.ARTIST + " - " + metadata.TITLE + " (" + metadata.ALBUMARTIST + " - " + album + ") [" + date + "]</h5>";
@@ -47,18 +44,18 @@
 
         // Update Album Cover
         document.getElementById("albumImage").src = "files/covers/" + album + ".jpg";
-			  document.getElementById("albumImage").title = album;
+        document.getElementById("albumImage").title = album;
       },
       metadataTypes: ["ogg"]
     })
 
 	  // Wallpaper Array: ["Image URL", "Image Time Identifier", "Image Source"]
-	  var wallpapers = [
+    var wallpapers = [
       ["4d14be4d7081ce578770f7cbeefcc7a9.jpg", "DAY", "https://www.pixiv.net/en/artworks/42967838"],
       ["ecfc07be591d35018b20456ab1400f60.jpg", "NIGHT", "https://www.pixiv.net/en/artworks/74784230"],
       ["f7af909e2992d9a3254a0386eded448c.jpg", "SUN", "https://www.pixiv.net/en/artworks/49268642"],
       ["feefda19f236d0c4459156263a8f5c09.jpg", "SUN", "https://www.pixiv.net/en/artworks/73691792"]
-	  ];
+    ];
 
     var albumLinks = [
       //["幻想郷茶房 ～tea for two～", "https://spritewing.com/"]
@@ -78,6 +75,7 @@
       ["Bitter", "https://ecs.toranoana.jp/tora/ec/item/040030046014/"],
       ["Cirno out #1", "https://ec.toranoana.jp/tora_r/ec/item/040030441684/"],
       ["Cirno out #2", "http://www.akibaoo.com/c/item/2500020422694/"],
+      ["Cirno out #3", "https://ecs.toranoana.jp/tora/ec/item/040030632904/"],
       ["Cafe de Touhou", "https://ddby.jp/cafedetouhou/"],
       ["Cafe de Touhou 2", "https://ddby.jp/cafedetouhou2/"],
       ["Cafe de Touhou 3", "https://ddby.jp/cafedetouhou3/"],
@@ -326,7 +324,7 @@
   			{
   				//document.getElementById("bottomLeftText").innerHTML = "<h3>Radio is Currently Offline</h3>";
 				//document.getElementById("albumImage").src = "files/covers/cover.jpg";
-				document.getElementById("albumImage").title = "Touhou Cafe Radio";
+				document.getElementById("albumImage").title = "Touhou Café Radio";
 				currentlyOffline = true;
 
   				return;
@@ -341,7 +339,7 @@
   					{
   						//document.getElementById("bottomLeftText").innerHTML = "<h3>Radio is Currently Offline</h3>";
 						//document.getElementById("albumImage").src = "files/covers/cover.jpg";
-						document.getElementById("albumImage").title = "Touhou Cafe Radio";
+						document.getElementById("albumImage").title = "Touhou Café Radio";
 						currentlyOffline = true;
   		      }
   					else
@@ -349,7 +347,7 @@
   						//document.getElementById("bottomLeftText").innerHTML = "<h4><i>Girls are now preparing. Please wait warmly...</i></h4>";
 						document.getElementById("bottomLeftText").innerHTML = "<h3>Currently Playing: Nothing</h3>";
 						//document.getElementById("albumImage").src = "files/covers/cover.jpg";
-						document.getElementById("albumImage").title = "Touhou Cafe Radio";
+						document.getElementById("albumImage").title = "Touhou Café Radio";
   					}
   				}
   				else
@@ -384,7 +382,7 @@
             if (disableAlbumCovers)
             {
               //document.getElementById("albumImage").src = "files/covers/cover.jpg";
-              document.getElementById("albumImage").title = "Touhou Cafe Radio";
+              document.getElementById("albumImage").title = "Touhou Café Radio";
             }
             else
             {
@@ -401,7 +399,7 @@
 			  /*
               if (currentAlbumPlaying.startsWith("Th"))
               {
-                var stringAlbumPlaying = "Touhou Cafe Radio";
+                var stringAlbumPlaying = "Touhou Café Radio";
 
                 stringAlbumPlaying = currentAlbumPlaying.substring(2, currentAlbumPlaying.length);
 
@@ -848,7 +846,7 @@
   	<div id="topMiddleDiv" class="shadowtext" style="position: absolute; left: 50%; top: 55px; transform: translate(-50%, -50%);">
   		<center>
   			<div id="radioTitle">
-				<h1 style="float: left;"><big><big>Touhou Cafe Radio</big></big></h1>
+				<h1 style="float: left;"><big><big>Touhou Café Radio</big></big></h1>
 				<h4 style="float: right; margin-top: 47px; margin-left: 6px;">WIP~!</h4>
 				<!--<h4 style="margin-top: 47px; margin-left: 6px;">Work In Progress~!</h4>-->
 			</div>
@@ -867,7 +865,7 @@
     <div id="overlay" class="shadowtext" style="position: fixed; display: none; width: 100%; height: 100%; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(0,0,0,0.5); z-index: 2;">
       <div id="overlayAbout" style="position: absolute; display: none; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 500px; height: 600px; background-color: #000000;">
         <center><h1>owo what's this</h1><hr><br>
-        Welcome to Touhou Cafe Radio!<br>Randomly Playing Cafe Touhou Songs!<br><br>
+        Welcome to Touhou Café Radio!<br>Randomly Playing Café Touhou Songs!<br><br>
         The Time is Currently: <strong><span id="currentTimeOutput"></span></strong><br><br>
         Background Cycle Pool:
         <list>
@@ -906,7 +904,7 @@
 		<br>
         <input id="disableSongInformationBox" type="checkbox" onclick="if(this.checked){document.getElementById('bottomLeftText').style.display='none';}else{document.getElementById('bottomLeftText').style.display='block';}"> - Hide Radio Information / Status<br>
         <input id="disableAlbumCoversBox" type="checkbox" onclick="if(this.checked){document.getElementById('albumImage').style.display='none';maximumSongTitleLength = 75;disableAlbumCovers = true;}else{document.getElementById('albumImage').style.display='block';maximumSongTitleLength = 56;disableAlbumCovers = false;}"> - Hide Album Cover<br>
-        <input id="stopAlbumCoverChangingBox" type="checkbox" onclick="if(this.checked){document.getElementById('albumImage').src = 'files/cover/cover.jpg';document.getElementById('albumImage').title = 'Touhou Cafe Radio';disableAlbumCovers = true;}else{disableAlbumCovers = false;}"> - Use Default Album Cover<br>
+        <input id="stopAlbumCoverChangingBox" type="checkbox" onclick="if(this.checked){document.getElementById('albumImage').src = 'files/cover/cover.jpg';document.getElementById('albumImage').title = 'Touhou Café Radio';disableAlbumCovers = true;}else{disableAlbumCovers = false;}"> - Use Default Album Cover<br>
 		<br>
 		<input id="hideAmbience" type="checkbox" onclick="if(this.checked){document.getElementById('topRightText').style.display='none';}else{document.getElementById('topRightText').style.display='block';}"> - Hide Ambience Sounds<br>
 		<br>
@@ -945,8 +943,8 @@
 	-->
 
     <div id="bottomLeft" style="position: absolute; bottom: 0px; left: 30px; bottom: 15px;">
-      <!--<img id="albumImage" src="files/covers/cover.jpg" title="Touhou Cafe Radio" onclick="window.open(this.src, '_BLANK');" onerror="this.src = 'files/covers/cover.jpg';this.title = 'Touhou Cafe Radio';" style="float: left; width: 100px; height: 100px; cursor: pointer;"></img>-->
-      <img id="albumImage" src="files/covers/cover.jpg" title="Touhou Cafe Radio" onclick="window.open(this.src, '_BLANK');" style="float: left; width: 100px; height: 100px; cursor: pointer;"></img>
+      <!--<img id="albumImage" src="files/covers/cover.jpg" title="Touhou Café Radio" onclick="window.open(this.src, '_BLANK');" onerror="this.src = 'files/covers/cover.jpg';this.title = 'Touhou Café Radio';" style="float: left; width: 100px; height: 100px; cursor: pointer;"></img>-->
+      <img id="albumImage" src="files/covers/cover.jpg" title="Touhou Café Radio" onclick="window.open(this.src, '_BLANK');" style="float: left; width: 100px; height: 100px; cursor: pointer;"></img>
   	  <div class="shadowtext" id="bottomLeftText" style="float: right; margin-left: 12px;"><br><br><h5><i>Girls are now preparing. Please wait warmly...</i></h5></div>
     </div>
 
