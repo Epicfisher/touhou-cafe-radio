@@ -43,7 +43,9 @@
         document.getElementById("albumLink").innerHTML="Buy the Album: <a href='" + albumLink + "' target='_BLANK_'>" + albumLink + "</a>"
 
         // Update Album Cover
-        document.getElementById("albumImage").src = "files/covers/" + album + ".jpg";
+        albumImg = album;
+        albumImg = albumImg.replace("#", "%23");
+        document.getElementById("albumImage").src = "files/covers/" + albumImg + ".jpg";
         document.getElementById("albumImage").title = album;
       },
       metadataTypes: ["ogg"]
