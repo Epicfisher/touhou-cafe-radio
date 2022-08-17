@@ -56,7 +56,8 @@
       ["4d14be4d7081ce578770f7cbeefcc7a9.jpg", "DAY", "https://www.pixiv.net/en/artworks/42967838"],
       ["ecfc07be591d35018b20456ab1400f60.jpg", "NIGHT", "https://www.pixiv.net/en/artworks/74784230"],
       ["f7af909e2992d9a3254a0386eded448c.jpg", "SUN", "https://www.pixiv.net/en/artworks/49268642"],
-      ["feefda19f236d0c4459156263a8f5c09.jpg", "SUN", "https://www.pixiv.net/en/artworks/73691792"]
+      ["feefda19f236d0c4459156263a8f5c09.jpg", "SUN", "https://www.pixiv.net/en/artworks/73691792"],
+      ["b852537e75ed4e302b8edc445ad7fd13.jpg", "DAY", "https://twitter.com/ehokun/status/1274631205162385408"]
     ];
 
     var albumLinks = [
@@ -591,19 +592,20 @@
 			if (hourTime == "DAY")
 			{
 				urlToUse = 'files/wallpapers/' + dayWallpapers[wallpaper][0]
-				source = sunWallpapers[wallpaper][2]
+				source = dayWallpapers[wallpaper][2]
 			}
 			if (hourTime == "NIGHT")
 			{
 				urlToUse = 'files/wallpapers/' + nightWallpapers[wallpaper][0]
-				source = sunWallpapers[wallpaper][2]
+				source = nightWallpapers[wallpaper][2]
 			}
 			if (hourTime == "Disregarded")
 			{
 				urlToUse = 'files/wallpapers/' + wallpapers[wallpaper][0]
-				source = sunWallpapers[wallpaper][2]
+				source = wallpapers[wallpaper][2]
 			}
           currentWallpaper.style.backgroundImage = 'url(' + urlToUse + ')';
+          document.getElementById("backgroundLink").innerHTML="Background Artist: <a href='" + source + "' target='_BLANK_'>" + source + "</a>";
 
 			wallpaper = getRandomWallpaper(imagesAvailable, hourTime);
 		  if (hourTime == "SUN")
@@ -629,8 +631,6 @@
           nextWallpaper = urlToUse
 
           changingWallpaper = false;
-		  
-		  document.getElementById("backgroundLink").innerHTML="Background Artist: <a href='" + source + "' target='_BLANK_'>" + source + "</a>";
         }
         else
         {
@@ -639,6 +639,7 @@
             document.getElementById("wallpaperImage1").style.backgroundImage = 'url(' + nextWallpaper + ')';
           }
 
+          document.getElementById("backgroundLink").innerHTML="Background Artist: <a href='" + source + "' target='_BLANK_'>" + source + "</a>";
           //document.getElementById("wallpaperImage2").animate({opacity: 0}, 0).css({'background-image': 'url(' + nextWallpaper + ')'}).animate({opacity: 1}, 2500);
           new function() {
             FX.fadeOut(currentWallpaper,
