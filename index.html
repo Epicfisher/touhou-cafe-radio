@@ -28,7 +28,7 @@
         if(date.includes('-')) { date = date.substring(0, date.indexOf('-')); }
 
         // Update Now Playing:
-        document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: ???</h3><h5>Now Playing: " + metadata.ARTIST + " - " + metadata.TITLE + " (" + metadata.ALBUMARTIST + " - " + album + ") [" + date + "]</h5>";
+        document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: ???</h3><h5>Now Playing: " + metadata.ARTIST + " - " + metadata.TITLE + "<br>From: " + metadata.ALBUMARTIST + " - " + album + " (" + date + ")</h5>";
 
         // Update Album Link
         var albumLink = "Unknown";
