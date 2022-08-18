@@ -924,6 +924,8 @@
 		<!--<input id="stopBackgroundChangingBox" type="checkbox" onclick="if(this.checked){document.getElementById('wallpaperImage2').style.backgroundImage = 'url(wallpaper.jpg)';disableWallpapers = true;}else{disableWallpapers = false;}"> - Use Default Background<br>-->
 		<input id="stopBackgroundChangingBox" type="checkbox" onclick="if(this.checked){nextWallpaper = 'wallpaper';changeWallpaper();disableWallpapers = true;}else{disableWallpapers = false;changeWallpaper();}"> - Use Default Background<br>
 		<br>
+    <input id="hideCreatorLinks" type="checkbox" onclick="if(this.checked){document.getElementById('bottomRightText').style.display='none';}else{document.getElementById('bottomRightText').style.display='block';}"> - Hide Artist Links<br>
+    <br>
 		<input id="hideSettingsBox" type="checkbox" onclick="if(this.checked){document.getElementById('topLeftText').style.display='none';}else{document.getElementById('topLeftText').style.display='block';}"> - Hide Settings<br>
         <br>
         <input id="hideRadioTitleBox" type="checkbox" onclick="if(this.checked){document.getElementById('radioTitle').style.display='none';document.getElementById('topMiddleDiv').style.top = '42px';}else{document.getElementById('radioTitle').style.display='block';document.getElementById('topMiddleDiv').style.top = '55px';}"> - Hide Radio Title<br>
