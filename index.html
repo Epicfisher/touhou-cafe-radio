@@ -953,8 +953,8 @@
   	  <!--<iframe allow="autoplay;" id="radioPlayerIframe" src="player.html" width="277" height="82" scrolling="no" frameborder="0"></iframe>-->
 	  <!--<audio autoplay controls> <source src="https://touhou-radio.herokuapp.com/live.ogg"> </audio>-->
     <!--getNewStatusInfo(() => countSelfListener = 1)-->
-    <button onclick="player.play(); clearInterval(statusInterval); statusInterval = setInterval(getNewStatusInfo, 5000); countSelfListener = 1; getNewStatusInfo();"> Play </button>
-    <button onclick="player.stop(); clearInterval(statusInterval); statusInterval = setInterval(getNewStatusInfo, 5000); countSelfListener = -1; getNewStatusInfo(); document.getElementById('albumImage').src = 'files/covers/Cover-300.jpg'; document.getElementById('albumImage').title = 'Touhou Café Radio';"> Stop </button>
+    <button onclick="if (player.state == 'playing') {return}; player.play(); clearInterval(statusInterval); statusInterval = setInterval(getNewStatusInfo, 5000); countSelfListener = 1; getNewStatusInfo();"> Play </button>
+    <button onclick="if (player.state == 'stopped') {return}; player.stop(); clearInterval(statusInterval); statusInterval = setInterval(getNewStatusInfo, 5000); countSelfListener = -1; getNewStatusInfo(); document.getElementById('albumImage').src = 'files/covers/Cover-300.jpg'; document.getElementById('albumImage').title = 'Touhou Café Radio';"> Stop </button>
     </div></center>
 
     <div id="bottomMiddle" class="shadowtext" style="position: absolute; bottom: 16px; width: 100%;">
