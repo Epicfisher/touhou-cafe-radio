@@ -28,7 +28,8 @@
         if(date.includes('-')) { date = date.substring(0, date.indexOf('-')); }
 
         // Update Now Playing:
-        document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: ???</h3><h5>Now Playing: " + metadata.ARTIST + " - " + metadata.TITLE + "<br>From: " + metadata.ALBUMARTIST + " - " + album + " (" + date + ")</h5>";
+        //document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: ???</h3><h5>Now Playing: " + metadata.ARTIST + " - " + metadata.TITLE + "<br>From: " + metadata.ALBUMARTIST + " - " + album + " (" + date + ")</h5>";
+        document.getElementById("nowPlaying").innerHTML = "<h5>Now Playing: " + metadata.ARTIST + " - " + metadata.TITLE + "<br>From: " + metadata.ALBUMARTIST + " - " + album + " (" + date + ")</h5>";
 
         // Update Album Link
         var albumLink = "Unknown";
@@ -116,7 +117,7 @@
 	  }
     </script>
 
-    <script type='text/javascript' src='backgroundinfo.js'></script>
+    <!--<script type='text/javascript' src='backgroundinfo.js'></script>-->
 
   	<link rel="icon" href="favicon.ico" type="image/x-icon">
 
@@ -321,18 +322,18 @@
   			}
   		}
 
-  		function returnedStatusInfo(currentRawStatusJson)
-  		{
-  			var currentStatusJson;
-
+      function returnedStatusInfo(currentRawStatusJson)
+      {
+        var currentStatusJson;
   			//alert(currentRawStatusJson);
 
-  			if (currentRawStatusJson == "")
-  			{
-  				//document.getElementById("bottomLeftText").innerHTML = "<h3>Radio is Currently Offline</h3>";
-				//document.getElementById("albumImage").src = "files/covers/cover.jpg";
-				document.getElementById("albumImage").title = "Touhou Café Radio";
-				currentlyOffline = true;
+        if (currentRawStatusJson == "")
+        {
+          //document.getElementById("bottomLeftText").innerHTML = "<h3>Radio is Currently Offline</h3>";
+          document.getElementById("listenerCount").innerHTML = "<h3>Radio is Currently Offline</h3>";
+          document.getElementById("albumImage").src = "files/covers/cover.jpg";
+          document.getElementById("albumImage").title = "Touhou Café Radio";
+          currentlyOffline = true;
 
   				return;
   			}
@@ -340,19 +341,21 @@
   			{
   				currentStatusJson = JSON.parse(currentRawStatusJson);
 
-  				if (currentStatusJson.icestats.source[0] == null)
+  				if (currentStatusJson.icestats.source.title == null)
   				{
   					if (currentStatusJson.icestats == null)
   					{
-  						//document.getElementById("bottomLeftText").innerHTML = "<h3>Radio is Currently Offline</h3>";
-						//document.getElementById("albumImage").src = "files/covers/cover.jpg";
-						document.getElementById("albumImage").title = "Touhou Café Radio";
-						currentlyOffline = true;
+              //document.getElementById("bottomLeftText").innerHTML = "<h3>Radio is Currently Offline</h3>";
+              document.getElementById("listenerCount").innerHTML = "<h3>Radio is Currently Offline</h3>";
+						  //document.getElementById("albumImage").src = "files/covers/cover.jpg";
+              document.getElementById("albumImage").title = "Touhou Café Radio";
+              currentlyOffline = true;
   		      }
   					else
   					{
   						//document.getElementById("bottomLeftText").innerHTML = "<h4><i>Girls are now preparing. Please wait warmly...</i></h4>";
-						document.getElementById("bottomLeftText").innerHTML = "<h3>Currently Playing: Nothing</h3>";
+						//document.getElementById("bottomLeftText").innerHTML = "<h3>Currently Playing: Nothing</h3>";
+            document.getElementById("listenerCount").innerHTML = "<h3>Currently Playing: Nothing</h3>";
 						//document.getElementById("albumImage").src = "files/covers/cover.jpg";
 						document.getElementById("albumImage").title = "Touhou Café Radio";
   					}
@@ -371,37 +374,44 @@
               }
             }
 
-            var radioListeners = currentStatusJson.icestats.source[0].listeners;
-            var radioPlaying = currentStatusJson.icestats.source[0].title;
+            var radioListeners = currentStatusJson.icestats.source.listeners;
+            var radioPlaying = currentStatusJson.icestats.source.title;
+            var radioArtist = currentStatusJson.icestats.source.artist;
 
-            var displayRadioPlaying = radioPlaying;
-            displayRadioPlaying = displayRadioPlaying.substring(displayRadioPlaying.indexOf("-") + 2, displayRadioPlaying.length)
+            //var displayRadioPlaying = radioPlaying;
+            //displayRadioPlaying = displayRadioPlaying.substring(displayRadioPlaying.indexOf("-") + 2, displayRadioPlaying.length)
 
-            if (displayRadioPlaying.length > maximumSongTitleLength)
+            //if (displayRadioPlaying.length > maximumSongTitleLength)
+            //{
+              //displayRadioPlaying = displayRadioPlaying.substring(0, maximumSongTitleLength) + "..";
+            //}
+
+            //var currentAlbumPlaying = radioPlaying.substring(0, radioPlaying.indexOf('-') - 1);
+
+            //document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: " + radioListeners + "</h3><h5>Playing: " + displayRadioPlaying + "</h5>";
+            document.getElementById("listenerCount").innerHTML = "<h3>Listeners: " + radioListeners + "</h3>";
+            if (player.state != "playing")
             {
-              displayRadioPlaying = displayRadioPlaying.substring(0, maximumSongTitleLength) + "..";
+              //document.getElementById("nowPlaying").innerHTML = "<h3>Radio is Online!</h3>";
+              document.getElementById("nowPlaying").innerHTML = "<h5>Now Playing: " + radioArtist + " - " + radioPlaying + "</h5>";
             }
-
-            var currentAlbumPlaying = radioPlaying.substring(0, radioPlaying.indexOf('-') - 1);
-
-            document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: " + radioListeners + "</h3><h5>Playing: " + displayRadioPlaying + "</h5>";
 
             if (disableAlbumCovers)
             {
-              //document.getElementById("albumImage").src = "files/covers/cover.jpg";
+              document.getElementById("albumImage").src = "files/covers/cover.jpg";
               document.getElementById("albumImage").title = "Touhou Café Radio";
             }
             else
             {
 			  //if (currentAlbumPlaying == "Neo–traditionalism of Japan")
 			  //if (currentAlbumPlaying.startsWith("Neo"))
-			  if (currentAlbumPlaying == "Neo&#8211;traditionalism of Japan")
-			  {
-				currentAlbumPlaying = "Neo-traditionalism of Japan";
-			  }
+			  //if (currentAlbumPlaying == "Neo&#8211;traditionalism of Japan")
+			  //{
+				//currentAlbumPlaying = "Neo-traditionalism of Japan";
+			  //}
 			
-              document.getElementById("albumImage").src = "files/covers/" + currentAlbumPlaying + ".jpg";
-			  document.getElementById("albumImage").title = currentAlbumPlaying;
+              //document.getElementById("albumImage").src = "files/covers/" + currentAlbumPlaying + ".jpg";
+			  //document.getElementById("albumImage").title = currentAlbumPlaying;
 			  
 			  /*
               if (currentAlbumPlaying.startsWith("Th"))
@@ -434,7 +444,8 @@
 
   		function getNewStatusInfo()
   		{
-  			readTextFile(protocolType + "RADIO URL:" + icecastPort + "/status-json.xsl");
+  			//readTextFile(protocolType + "RADIO URL:" + icecastPort + "/status-json.xsl");
+        readTextFile("https://touhou-radio.herokuapp.com/status-json.xsl");
   		}
 
   		function init()
@@ -952,10 +963,15 @@
     <div id="bottomLeft" style="position: absolute; bottom: 0px; left: 30px; bottom: 15px;">
       <!--<img id="albumImage" src="files/covers/cover.jpg" title="Touhou Café Radio" onclick="window.open(this.src, '_BLANK');" onerror="this.src = 'files/covers/cover.jpg';this.title = 'Touhou Café Radio';" style="float: left; width: 100px; height: 100px; cursor: pointer;"></img>-->
       <img id="albumImage" src="files/covers/cover.jpg" title="Touhou Café Radio" onclick="window.open(this.src, '_BLANK');" style="float: left; width: 100px; height: 100px; cursor: pointer;"></img>
-  	  <div class="shadowtext" id="bottomLeftText" style="float: right; margin-left: 12px;"><br><br><h5><i>Girls are now preparing. Please wait warmly...</i></h5></div>
+      <div class="shadowtext" id="bottomLeftText" style="float: right; margin-left: 12px;">
+        <div id="listenerCount"></div>
+        <div id="nowPlaying">
+          <br><br><h5><i>Girls are now preparing. Please wait warmly...</i></h5>
+        </div>
+      </div>
     </div>
 
-  	<div class="shadowtext" id="bottomRightText" style="position: fixed; bottom: 0px; right: 30px; text-align: right;">
+    <div class="shadowtext" id="bottomRightText" style="position: fixed; bottom: 0px; right: 30px; text-align: right;">
       <h3>Support the Artists!</h3>
         <h5>
           <div id="backgroundLink"></div>
