@@ -102,7 +102,9 @@
       //["du Cafe’", "https://web.archive.org/web/20110526044924/http://triangler.net/archives/1004"],
       //["du Cafe’ due", "https://web.archive.org/web/20130628020448/http://triangler.net/works/PAER-0043/"],
       //["du Cafe’ tre", "https://web.archive.org/web/20130426005914/http://triangler.net/archives/1646"],
-    ]
+    ];
+
+    var statusInterval;
 
 	  //alert(wallpapers[0][0]);
 	  
@@ -495,8 +497,7 @@
 			wallpaperPreloadInterval = setTimeout(preLoadNextWallpaper, wallpaperPreloadIntervalTime);
 
 			getNewStatusInfo();
-
-			setInterval(getNewStatusInfo, 5000);
+      statusInterval = setInterval(getNewStatusInfo, 5000);
   		}
 
   		function changeWallpaper()
@@ -947,8 +948,9 @@
   	  <!--<iframe src="player.html" width="277" height="102" scrolling="no" frameborder="0">-->
   	  <!--<iframe allow="autoplay;" id="radioPlayerIframe" src="player.html" width="277" height="82" scrolling="no" frameborder="0"></iframe>-->
 	  <!--<audio autoplay controls> <source src="https://touhou-radio.herokuapp.com/live.ogg"> </audio>-->
-    <button onclick="player.play(); getNewStatusInfo(); countSelfListener = 1;"> Play </button>
-    <button onclick="player.stop(); getNewStatusInfo(); countSelfListener = -1; document.getElementById('albumImage').src = 'files/covers/Cover-300.jpg'; document.getElementById('albumImage').title = 'Touhou Café Radio';"> Stop </button>
+    <!--getNewStatusInfo(() => countSelfListener = 1)-->
+    <button onclick="player.play(); clearInterval(statusInterval); statusInterval = setInterval(getNewStatusInfo, 5000); countSelfListener = 1; getNewStatusInfo();"> Play </button>
+    <button onclick="player.stop(); clearInterval(statusInterval); statusInterval = setInterval(getNewStatusInfo, 5000); countSelfListener = -1; getNewStatusInfo(); document.getElementById('albumImage').src = 'files/covers/Cover-300.jpg'; document.getElementById('albumImage').title = 'Touhou Café Radio';"> Stop </button>
     </div></center>
 
     <div id="bottomMiddle" class="shadowtext" style="position: absolute; bottom: 16px; width: 100%;">
