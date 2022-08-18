@@ -923,8 +923,6 @@
         <input id="disregardTimeWallpapersBox" type="checkbox" onclick="if(this.checked){disregardTimeWallpapers = true;}else{disregardTimeWallpapers = false;}"> - Use All Backgrounds Regardless of Time<br>
 		<!--<input id="stopBackgroundChangingBox" type="checkbox" onclick="if(this.checked){document.getElementById('wallpaperImage2').style.backgroundImage = 'url(wallpaper.jpg)';disableWallpapers = true;}else{disableWallpapers = false;}"> - Use Default Background<br>-->
 		<input id="stopBackgroundChangingBox" type="checkbox" onclick="if(this.checked){nextWallpaper = 'wallpaper';changeWallpaper();disableWallpapers = true;}else{disableWallpapers = false;changeWallpaper();}"> - Use Default Background<br>
-		<br>
-    <input id="hideCreatorLinks" type="checkbox" onclick="if(this.checked){document.getElementById('bottomRightText').style.display='none';}else{document.getElementById('bottomRightText').style.display='block';}"> - Hide Artist Links<br>
     <br>
 		<input id="hideSettingsBox" type="checkbox" onclick="if(this.checked){document.getElementById('topLeftText').style.display='none';}else{document.getElementById('topLeftText').style.display='block';}"> - Hide Settings<br>
         <br>
@@ -937,6 +935,8 @@
         <input id="disableAlbumCoversBox" type="checkbox" onclick="if(this.checked){document.getElementById('albumImage').style.display='none';maximumSongTitleLength = 75;disableAlbumCovers = true;}else{document.getElementById('albumImage').style.display='block';maximumSongTitleLength = 56;disableAlbumCovers = false;}"> - Hide Album Cover<br>
         <input id="stopAlbumCoverChangingBox" type="checkbox" onclick="if(this.checked){document.getElementById('albumImage').src = 'files/cover/Cover-300.jpg';document.getElementById('albumImage').title = 'Touhou Café Radio';disableAlbumCovers = true;}else{disableAlbumCovers = false;}"> - Use Default Album Cover<br>
 		<br>
+    <input id="hideCreatorLinks" type="checkbox" onclick="if(this.checked){document.getElementById('bottomRightText').style.display='none';}else{document.getElementById('bottomRightText').style.display='block';}"> - Hide Artist Links<br>
+    <br>
 		<input id="hideAmbience" type="checkbox" onclick="if(this.checked){document.getElementById('topRightText').style.display='none';}else{document.getElementById('topRightText').style.display='block';}"> - Hide Ambience Sounds<br>
 		<br>
 		<input id="hideBottomMiddle" type="checkbox" onclick="if(this.checked){document.getElementById('bottomMiddle').style.display='none';}else{document.getElementById('bottomMiddle').style.display='block';}"> - Hide Miscellaneous Controls<br>
