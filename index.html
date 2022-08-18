@@ -105,6 +105,7 @@
     ];
 
     var statusInterval;
+    var radioListeners;
 
 	  //alert(wallpapers[0][0]);
 	  
@@ -384,7 +385,8 @@
               }
             }
 
-            var radioListeners = currentStatusJson.icestats.source.listeners;
+            if (countSelfListener == 0) { radioListeners = currentStatusJson.icestats.source.listeners; }
+            else { radioListeners += countSelfListener; }
             var radioPeakListeners = currentStatusJson.icestats.source.listener_peak;
             var radioPlaying = currentStatusJson.icestats.source.title;
             var radioArtist = currentStatusJson.icestats.source.artist;
@@ -400,7 +402,7 @@
             //var currentAlbumPlaying = radioPlaying.substring(0, radioPlaying.indexOf('-') - 1);
 
             //document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: " + radioListeners + "</h3><h5>Playing: " + displayRadioPlaying + "</h5>";
-            document.getElementById("listenerCount").innerHTML = "<h3>Listeners: " + (radioListeners+countSelfListener) + "</h3>";
+            document.getElementById("listenerCount").innerHTML = "<h3>Listeners: " + radioListeners + "</h3>";
             countSelfListener = 0;
             if (player.state != "playing")
             {
