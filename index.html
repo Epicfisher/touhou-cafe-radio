@@ -8,7 +8,7 @@
 
     <meta property="og:title" content="Touhou Café Radio">
     <meta property="og:type" content="music.radio_station">
-    <meta property="og:image" content="empty">
+    <meta property="og:image" content="https://epicfisher.github.io/touhou-cafe-radio/files/covers/Cover.jpg">
     <meta property="og:url" content="https://epicfisher.github.io/touhou-cafe-radio/">
 
     <meta property="og:description" content="Randomly Playing Café Touhou Songs!">
@@ -49,6 +49,7 @@
         document.getElementById("albumImage").src = "files/covers/" + albumImg + "-300.jpg";
         document.getElementById("albumImage").title = album;
       },
+      playbackMethod: "webaudio",
       metadataTypes: ["ogg"]
     })
 
@@ -112,6 +113,8 @@
 	  var sunWallpapers = [ ];
 	  var dayWallpapers = [ ];
 	  var nightWallpapers = [ ];
+
+    var countSelfListener = 0;
 	  
 	  // Populate Time-Specific Wallpapers
 	  for(var i = 0; i < wallpapers.length; i++)
@@ -336,7 +339,7 @@
         {
           //document.getElementById("bottomLeftText").innerHTML = "<h3>Radio is Currently Offline</h3>";
           document.getElementById("listenerCount").innerHTML = "<h3>Radio is Currently Offline</h3>";
-          document.getElementById("albumImage").src = "files/covers/cover.jpg";
+          document.getElementById("albumImage").src = "files/covers/cover-300.jpg";
           document.getElementById("albumImage").title = "Touhou Café Radio";
           currentlyOffline = true;
 
@@ -352,7 +355,7 @@
   					{
               //document.getElementById("bottomLeftText").innerHTML = "<h3>Radio is Currently Offline</h3>";
               document.getElementById("listenerCount").innerHTML = "<h3>Radio is Currently Offline</h3>";
-						  //document.getElementById("albumImage").src = "files/covers/cover.jpg";
+						  document.getElementById("albumImage").src = "files/covers/cover-300.jpg";
               document.getElementById("albumImage").title = "Touhou Café Radio";
               currentlyOffline = true;
   		      }
@@ -361,7 +364,7 @@
   						//document.getElementById("bottomLeftText").innerHTML = "<h4><i>Girls are now preparing. Please wait warmly...</i></h4>";
 						//document.getElementById("bottomLeftText").innerHTML = "<h3>Currently Playing: Nothing</h3>";
             document.getElementById("listenerCount").innerHTML = "<h3>Currently Playing: Nothing</h3>";
-						//document.getElementById("albumImage").src = "files/covers/cover.jpg";
+						document.getElementById("albumImage").src = "files/covers/cover-300.jpg";
 						document.getElementById("albumImage").title = "Touhou Café Radio";
   					}
   				}
@@ -380,6 +383,7 @@
             }
 
             var radioListeners = currentStatusJson.icestats.source.listeners;
+            var radioPeakListeners = currentStatusJson.icestats.source.listener_peak;
             var radioPlaying = currentStatusJson.icestats.source.title;
             var radioArtist = currentStatusJson.icestats.source.artist;
 
@@ -394,16 +398,17 @@
             //var currentAlbumPlaying = radioPlaying.substring(0, radioPlaying.indexOf('-') - 1);
 
             //document.getElementById("bottomLeftText").innerHTML = "<h3>Listeners: " + radioListeners + "</h3><h5>Playing: " + displayRadioPlaying + "</h5>";
-            document.getElementById("listenerCount").innerHTML = "<h3>Listeners: " + radioListeners + "</h3>";
+            document.getElementById("listenerCount").innerHTML = "<h3>Listeners: " + (radioListeners+countSelfListener) + "</h3>";
+            countSelfListener = 0;
             if (player.state != "playing")
             {
               //document.getElementById("nowPlaying").innerHTML = "<h3>Radio is Online!</h3>";
-              document.getElementById("nowPlaying").innerHTML = "<h5>Now Playing: " + radioArtist + " - " + radioPlaying + "</h5>";
+              document.getElementById("nowPlaying").innerHTML = "<h5>Now Playing: " + radioArtist + " - " + radioPlaying + "</br>(Disconnected! Press Play to start the tunes~)</h5>";
             }
 
             if (disableAlbumCovers)
             {
-              document.getElementById("albumImage").src = "files/covers/cover.jpg";
+              document.getElementById("albumImage").src = "files/covers/cover-300.jpg";
               document.getElementById("albumImage").title = "Touhou Café Radio";
             }
             else
@@ -927,7 +932,7 @@
 		<br>
         <input id="disableSongInformationBox" type="checkbox" onclick="if(this.checked){document.getElementById('bottomLeftText').style.display='none';}else{document.getElementById('bottomLeftText').style.display='block';}"> - Hide Radio Information / Status<br>
         <input id="disableAlbumCoversBox" type="checkbox" onclick="if(this.checked){document.getElementById('albumImage').style.display='none';maximumSongTitleLength = 75;disableAlbumCovers = true;}else{document.getElementById('albumImage').style.display='block';maximumSongTitleLength = 56;disableAlbumCovers = false;}"> - Hide Album Cover<br>
-        <input id="stopAlbumCoverChangingBox" type="checkbox" onclick="if(this.checked){document.getElementById('albumImage').src = 'files/cover/cover.jpg';document.getElementById('albumImage').title = 'Touhou Café Radio';disableAlbumCovers = true;}else{disableAlbumCovers = false;}"> - Use Default Album Cover<br>
+        <input id="stopAlbumCoverChangingBox" type="checkbox" onclick="if(this.checked){document.getElementById('albumImage').src = 'files/cover/cover-300.jpg';document.getElementById('albumImage').title = 'Touhou Café Radio';disableAlbumCovers = true;}else{disableAlbumCovers = false;}"> - Use Default Album Cover<br>
 		<br>
 		<input id="hideAmbience" type="checkbox" onclick="if(this.checked){document.getElementById('topRightText').style.display='none';}else{document.getElementById('topRightText').style.display='block';}"> - Hide Ambience Sounds<br>
 		<br>
@@ -942,8 +947,8 @@
   	  <!--<iframe src="player.html" width="277" height="102" scrolling="no" frameborder="0">-->
   	  <!--<iframe allow="autoplay;" id="radioPlayerIframe" src="player.html" width="277" height="82" scrolling="no" frameborder="0"></iframe>-->
 	  <!--<audio autoplay controls> <source src="https://touhou-radio.herokuapp.com/live.ogg"> </audio>-->
-    <button onclick="player.play();"> Play </button>
-    <button onclick="player.stop(); getNewStatusInfo(); document.getElementById('albumImage').src = 'files/covers/cover.jpg'; document.getElementById('albumImage').title = 'Touhou Café Radio';"> Stop </button>
+    <button onclick="player.play(); getNewStatusInfo(); countSelfListener = 1;"> Play </button>
+    <button onclick="player.stop(); getNewStatusInfo(); countSelfListener = -1; document.getElementById('albumImage').src = 'files/covers/cover-300.jpg'; document.getElementById('albumImage').title = 'Touhou Café Radio';"> Stop </button>
     </div></center>
 
     <div id="bottomMiddle" class="shadowtext" style="position: absolute; bottom: 16px; width: 100%;">
@@ -966,8 +971,7 @@
 	-->
 
     <div id="bottomLeft" style="position: absolute; bottom: 0px; left: 30px; bottom: 15px;">
-      <!--<img id="albumImage" src="files/covers/cover.jpg" title="Touhou Café Radio" onclick="window.open(this.src, '_BLANK');" onerror="this.src = 'files/covers/cover.jpg';this.title = 'Touhou Café Radio';" style="float: left; width: 100px; height: 100px; cursor: pointer;"></img>-->
-      <img id="albumImage" src="files/covers/cover.jpg" title="Touhou Café Radio" onclick="window.open(this.src, '_BLANK');" style="float: left; width: 100px; height: 100px; cursor: pointer;"></img>
+      <img id="albumImage" src="files/covers/cover-300.jpg" title="Touhou Café Radio" onclick="window.open(this.src.replace('-300', ''), '_BLANK');" onerror="this.src = 'files/covers/cover-300.jpg';this.title = 'Touhou Café Radio';" style="border-radius: 0%; float: left; width: 100px; height: 100px; cursor: pointer;"></img>
       <div class="shadowtext" id="bottomLeftText" style="float: right; margin-left: 12px;">
         <div id="listenerCount"></div>
         <div id="nowPlaying">
