@@ -834,6 +834,10 @@
       function showAbout()
       {
         document.getElementById("currentTimeOutput").innerHTML = currentTimeString;
+        if (currentTimeString == "Disregarded")
+        {
+          document.getElementById("currentTimeOutput").innerHTML += ".<br>Time has no meaning here."
+        }
 
         document.getElementById("sunWallpapersOutput").innerHTML = sunImagesAvailable;
         document.getElementById("dayWallpapersOutput").innerHTML = dayImagesAvailable;
