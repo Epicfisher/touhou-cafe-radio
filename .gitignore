@@ -1,5 +1,5 @@
-# Created by https://www.toptal.com/developers/gitignore/api/git,windows
-# Edit at https://www.toptal.com/developers/gitignore?templates=git,windows
+# Created by https://www.toptal.com/developers/gitignore/api/git,linux,windows
+# Edit at https://www.toptal.com/developers/gitignore?templates=git,linux,windows
 
 ### Git ###
 # Created by git for backups. To disable backups in Git:
@@ -15,6 +15,21 @@
 *_BASE_*.txt
 *_LOCAL_*.txt
 *_REMOTE_*.txt
+
+### Linux ###
+*~
+
+# temporary files which can be created if a process still has a handle open of a deleted file
+.fuse_hidden*
+
+# KDE directory preferences
+.directory
+
+# Linux trash folder which might appear on any partition or disk
+.Trash-*
+
+# .nfs files are created when an open file is removed but is still being accessed
+.nfs*
 
 ### Windows ###
 # Windows thumbnail cache files
@@ -42,4 +57,4 @@ $RECYCLE.BIN/
 # Windows shortcuts
 *.lnk
 
-# End of https://www.toptal.com/developers/gitignore/api/git,windows
+# End of https://www.toptal.com/developers/gitignore/api/git,linux,windows

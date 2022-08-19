@@ -407,6 +407,8 @@
             if (player.state != "playing")
             {
               //document.getElementById("nowPlaying").innerHTML = "<h3>Radio is Online!</h3>";
+              document.getElementById("albumImage").src = "files/covers/Cover-300.jpg";
+              document.getElementById("albumImage").title = "Touhou Café Radio"
               document.getElementById("nowPlaying").innerHTML = "<h5>Now Playing: " + radioArtist + " - " + radioPlaying + "</br>(Disconnected! Press Play to start the tunes~)</h5>";
             }
 
